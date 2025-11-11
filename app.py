@@ -23,10 +23,16 @@ if creds_b64:
         print(f"[INFO] Firebase credentials loaded from FIREBASE_CREDENTIALS_BASE64 env var")
     except Exception as e:
         print(f"[ERROR] Failed to decode FIREBASE_CREDENTIALS_BASE64: {e}")
-        raise
+        # Don't raise on Vercel - allow app to start even if Firebase isn't configured yet
 
 # Initialize Firebase
-firebase = FirebaseManager(app.config['FIREBASE_CREDENTIALS'])
+try:
+    firebase = FirebaseManager(app.config['FIREBASE_CREDENTIALS'])
+    print("[INFO] Firebase initialized successfully")
+except Exception as e:
+    print(f"[ERROR] Firebase initialization failed: {e}")
+    print("[WARNING] App will continue but Firebase-dependent features will fail")
+    firebase = None
 
 
 # Helper function to check if user is logged in
