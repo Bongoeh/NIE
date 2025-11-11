@@ -11,10 +11,10 @@
 	],
 	"env": {
 		"FLASK_ENV": "production",
-		"SECRET_KEY": "@secret_key",
-		"ADMIN_USERNAME": "@admin_username",
-		"ADMIN_PASSWORD": "@admin_password",
-		"FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
-		"FIREBASE_CREDENTIALS_BASE64": "@firebase_credentials_base64"
+		"SECRET_KEY": "@SECRET_KEY",
+		"ADMIN_USERNAME": "@ADMIN_USERNAME",
+		"ADMIN_PASSWORD": "@ADMIN_PASSWORD",
+		"FIREBASE_STORAGE_BUCKET": "@FIREBASE_STORAGE_BUCKET",
+		"FIREBASE_CREDENTIALS_BASE64": "@FIREBASE_CREDENTIALS_BASE64"
 	}
 }
