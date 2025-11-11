@@ -4,35 +4,59 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 import base64
-from config import Config
-from utils.firebase_utils import FirebaseManager
+import sys
+
+print("[INIT] Starting Flask app initialization...", file=sys.stderr)
+
+try:
+    from config import Config
+    print("[INIT] Config imported successfully", file=sys.stderr)
+except Exception as e:
+    print(f"[ERROR] Failed to import Config: {e}", file=sys.stderr)
+    sys.exit(1)
 
 app = Flask(__name__)
 app.config.from_object(Config)
+print("[INIT] Flask app created with config", file=sys.stderr)
+
+# Initialize Firebase as None - we'll try to load it
+firebase = None
 
 # Handle Firebase credentials from base64 environment variable
-# This is needed for Vercel deployment where the service account JSON
-# cannot be committed to the repository
 creds_b64 = os.environ.get('FIREBASE_CREDENTIALS_BASE64')
+print(f"[INIT] FIREBASE_CREDENTIALS_BASE64 present: {bool(creds_b64)}", file=sys.stderr)
+
 if creds_b64:
     try:
         creds_bytes = base64.b64decode(creds_b64)
         creds_path = app.config.get('FIREBASE_CREDENTIALS', 'firebase_config.json')
         with open(creds_path, 'wb') as f:
             f.write(creds_bytes)
-        print(f"[INFO] Firebase credentials loaded from FIREBASE_CREDENTIALS_BASE64 env var")
+        print(f"[INIT] Firebase credentials written to {creds_path}", file=sys.stderr)
     except Exception as e:
-        print(f"[ERROR] Failed to decode FIREBASE_CREDENTIALS_BASE64: {e}")
-        # Don't raise on Vercel - allow app to start even if Firebase isn't configured yet
+        print(f"[ERROR] Failed to decode/write Firebase credentials: {e}", file=sys.stderr)
 
-# Initialize Firebase
+# Try to import and initialize Firebase
 try:
+    from utils.firebase_utils import FirebaseManager
+    print("[INIT] FirebaseManager imported", file=sys.stderr)
     firebase = FirebaseManager(app.config['FIREBASE_CREDENTIALS'])
-    print("[INFO] Firebase initialized successfully")
+    print("[INIT] Firebase initialized successfully", file=sys.stderr)
 except Exception as e:
-    print(f"[ERROR] Firebase initialization failed: {e}")
-    print("[WARNING] App will continue but Firebase-dependent features will fail")
-    firebase = None
+    print(f"[WARNING] Firebase initialization failed: {e}", file=sys.stderr)
+    print("[WARNING] App will start but Firebase features will not work", file=sys.stderr)
+
+print("[INIT] App initialization complete", file=sys.stderr)
+
+
+# Health check endpoint
+@app.route('/health')
+def health():
+    """Health check endpoint for Vercel"""
+    return jsonify({
+        "status": "ok",
+        "firebase_connected": firebase is not None
+    }), 200
 
 
 # Helper function to check if user is logged in
@@ -53,8 +77,17 @@ def allowed_file(filename):
 @app.route('/')
 def index():
     """Home page with recent announcements"""
-    announcements = firebase.get_announcements(limit=5)
-    settings = firebase.get_settings()
+    if firebase is None:
+        announcements = []
+        settings = {}
+    else:
+        try:
+            announcements = firebase.get_announcements(limit=5)
+            settings = firebase.get_settings()
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch home page data: {e}", file=sys.stderr)
+            announcements = []
+            settings = {}
     return render_template('index.html', announcements=announcements, settings=settings)
 
 @app.route('/calendar')
