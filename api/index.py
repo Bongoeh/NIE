@@ -208,4 +208,3 @@ def server_error(error):
 if __name__ == '__main__':
     print("[MAIN] Starting Flask app...", file=sys.stderr, flush=True)
     app.run(debug=False)
-    return app(request.environ, request.start_response)
