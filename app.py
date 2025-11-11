@@ -97,12 +97,23 @@ def index():
     
     if firebase:
         try:
+            # Fetch announcements
             announcements = firebase.get_announcements(limit=5)
+            print(f"[DEBUG] Fetched {len(announcements)} announcements", file=sys.stderr)
+            
+            # Debug: Print announcement data
+            for idx, ann in enumerate(announcements):
+                print(f"[DEBUG] Announcement {idx}: {ann.get('title', 'No title')} - ID: {ann.get('id', 'No ID')}", file=sys.stderr)
+            
             settings = firebase.get_settings()
+            print(f"[DEBUG] Settings loaded: {settings}", file=sys.stderr)
         except Exception as e:
             print(f"[ERROR] Failed to fetch home page data: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc()
             flash('Unable to load some data. Please try again later.', 'warning')
     else:
+        print("[WARNING] Firebase not available, using default settings", file=sys.stderr)
         # Default values when Firebase is not available
         settings = {
             'whatsapp_number': '+27 72 692 4060',
@@ -221,8 +232,12 @@ def admin_dashboard():
         materials = firebase.get_all_materials()
         announcements = firebase.get_announcements(limit=10)
         settings = firebase.get_settings()
+        
+        print(f"[DEBUG] Dashboard loaded with {len(announcements)} announcements", file=sys.stderr)
     except Exception as e:
         print(f"[ERROR] Failed to fetch dashboard data: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         flash('Error loading dashboard data.', 'danger')
     
     return render_template('admin/dashboard.html', 
@@ -316,16 +331,22 @@ def delete_camp(camp_id):
 def add_announcement():
     """Add a new announcement"""
     try:
+        # FIXED: Remove manual timestamp - let Firebase handle it
         announcement_data = {
             'title': request.form.get('title'),
             'content': request.form.get('content'),
-            'priority': request.form.get('priority', 'normal'),
-            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'priority': request.form.get('priority', 'normal')
         }
-        firebase.add_announcement(announcement_data)
+        
+        print(f"[DEBUG] Adding announcement: {announcement_data}", file=sys.stderr)
+        result = firebase.add_announcement(announcement_data)
+        print(f"[DEBUG] Announcement added successfully", file=sys.stderr)
+        
         flash('Announcement added successfully!', 'success')
     except Exception as e:
         print(f"[ERROR] Failed to add announcement: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         flash(f'Error adding announcement: {str(e)}', 'danger')
     return redirect(url_for('admin_dashboard'))
 
@@ -339,10 +360,13 @@ def delete_announcement(announcement_id):
         return redirect(url_for('admin_dashboard'))
     
     try:
+        print(f"[DEBUG] Deleting announcement ID: {announcement_id}", file=sys.stderr)
         firebase.delete_announcement(announcement_id)
         flash('Announcement deleted successfully!', 'success')
     except Exception as e:
         print(f"[ERROR] Error deleting announcement: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         flash(f'Error deleting announcement: {str(e)}', 'danger')
     return redirect(url_for('admin_dashboard'))
 

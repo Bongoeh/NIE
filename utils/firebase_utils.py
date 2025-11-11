@@ -19,13 +19,27 @@ class FirebaseManager:
     def get_announcements(self, limit=5):
         """Fetch recent announcements from Firestore."""
         db = firestore.client()
-        announcements_ref = db.collection('announcements').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(limit)
-        announcements = []
-        for doc in announcements_ref.stream():
-            announcement_data = doc.to_dict()
-            announcement_data['id'] = doc.id
-            announcements.append(announcement_data)
-        return announcements
+        try:
+            # Try to order by timestamp
+            announcements_ref = db.collection('announcements').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(limit)
+            announcements = []
+            for doc in announcements_ref.stream():
+                announcement_data = doc.to_dict()
+                announcement_data['id'] = doc.id
+                # Only include if timestamp exists and is not None
+                if announcement_data.get('timestamp') is not None:
+                    announcements.append(announcement_data)
+            return announcements
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch announcements with ordering: {e}")
+            # Fallback: get all announcements without ordering
+            announcements_ref = db.collection('announcements').limit(limit)
+            announcements = []
+            for doc in announcements_ref.stream():
+                announcement_data = doc.to_dict()
+                announcement_data['id'] = doc.id
+                announcements.append(announcement_data)
+            return announcements
 
     def get_settings(self):
         """Fetch website settings from Firestore."""
@@ -107,9 +121,13 @@ class FirebaseManager:
     def add_announcement(self, announcement_data):
         """Add a new announcement to Firestore."""
         db = firestore.client()
-        announcement_data['timestamp'] = firestore.SERVER_TIMESTAMP
+        # Use Python datetime for immediate availability
+        announcement_data['timestamp'] = datetime.now()
+        announcement_data['created_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         announcements_ref = db.collection('announcements')
-        announcements_ref.add(announcement_data)
+        doc_ref = announcements_ref.add(announcement_data)
+        print(f"[DEBUG] Announcement added with ID: {doc_ref[1].id}")
+        return doc_ref
 
     def update_settings(self, settings_data):
         """Update website settings in Firestore."""
