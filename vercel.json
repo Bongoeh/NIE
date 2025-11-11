@@ -8,13 +8,5 @@
 	"routes": [
 		{ "src": "/static/(.*)", "dest": "/static/$1" },
 		{ "src": "/(.*)", "dest": "app.py" }
-	],
-	"env": {
-		"FLASK_ENV": "production",
-		"SECRET_KEY": "@SECRET_KEY",
-		"ADMIN_USERNAME": "@ADMIN_USERNAME",
-		"ADMIN_PASSWORD": "@ADMIN_PASSWORD",
-		"FIREBASE_STORAGE_BUCKET": "@FIREBASE_STORAGE_BUCKET",
-		"FIREBASE_CREDENTIALS_BASE64": "@FIREBASE_CREDENTIALS_BASE64"
-	}
+	]
 }
