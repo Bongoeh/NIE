@@ -1,7 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 from werkzeug.utils import secure_filename
-from config import Config
 from flask import url_for
 from datetime import datetime
 import os

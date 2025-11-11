@@ -1,103 +1,456 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIE - Ntshofo Institution of Excellence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Home - Study Hub{% endblock %}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
 
-{% block content %}
-<div class="hero-section bg-primary text-white py-5">
-    <div class="container text-center">
-        <h1 class="display-4 mb-3">Welcome to  Ntshofo Institution of Excellence</h1>
-        <p class="lead">Quality education for weekend classes, camps, and study materials</p>
-        <a href="{{ url_for('calendar') }}" class="btn btn-light btn-lg me-2">View Classes</a>
-        <a href="{{ url_for('materials') }}" class="btn btn-outline-light btn-lg">Study Materials</a>
-    </div>
-</div>
+        /* Navigation */
+        nav {
+            background: #fc721d;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-<div class="container my-5">
-    <div class="row mb-5">
-        <div class="col-lg-8 mx-auto text-center">
-            <h2 class="mb-4">About Our Classes</h2>
-            <p class="lead">{{ settings.about or "We provide quality tutoring for students looking to excel in their studies. Join our weekend classes and holiday camps for intensive learning experiences." }}</p>
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: #f89d65;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #fa6509 0%, #f7d5c1 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #fc721d;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cta-button.secondary:hover {
+            background: white;
+            color: #fc721d;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #fc721d;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #fc721d;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Announcements */
+        .announcement-item {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-left: 4px solid #fc721d;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+
+        .announcement-item:hover {
+            transform: translateX(5px);
+        }
+
+        .announcement-item h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-item .date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .announcement-item.high-priority {
+            border-left-color: #e74c3c;
+            background: #ffebee;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #e74c3c;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #fc721d;
+            margin-bottom: 1rem;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .quick-link {
+            display: block;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fc721d 0%, #f89d65 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .quick-link:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-link h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-item .icon {
+            font-size: 2rem;
+            color: #fc721d;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item a {
+            color: #fc721d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: #fc721d;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+                padding: 0 1rem;
+            }
+
+            nav a {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        .no-announcements {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/camps">Camps</a></li>
+            <li><a href="/calendar">Calendar</a></li>
+            <li><a href="/contact">Contact</a></li>
+            {% if session.get('logged_in') %}
+                <li><a href="/admin/dashboard">Dashboard</a></li>
+                <li><a href="/admin/logout">Logout</a></li>
+            {% else %}
+                <li><a href="/admin/login">Admin Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to Ntshofo Institution of Excellence</h1>
+        <p>Empowering students to achieve academic excellence through dedicated teaching and personalized support</p>
+        <div class="cta-buttons">
+            <a href="/calendar" class="cta-button">View Classes</a>
+            <a href="/camps" class="cta-button secondary">Explore Camps</a>
         </div>
     </div>
 
-    <div class="row mb-5">
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fas fa-calendar-alt fa-3x mb-3" style="color: #fd5203;"></i>
-                    <h5 class="card-title">Weekend Classes</h5>
-                    <p class="card-text">Regular weekend sessions to help you stay on track</p>
-                    <p class="fw-bold" style="color: #fd5203;">R{{ settings.class_price or "TBA" }} per class</p>
-                    <a href="{{ url_for('calendar') }}" class="btn mt-2" style="background-color: #fd5203; color: white;">View Schedule</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fas fa-campground fa-3x text-orange mb-3" style="color: #f57133;"></i>
-                    <h5 class="card-title">Holiday Camps</h5>
-                    <p class="card-text">Intensive learning during school holidays</p>
-                    <p class="fw-bold" style="color: #f57133;">R{{ settings.camp_price or "TBA" }} per camp</p>
-                    <a href="{{ url_for('camps') }}" class="btn mt-2" style="background-color: #f57133; color: white;">View Camps</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fas fa-book-open fa-3x text-orange mb-3" style="color: #fa9566;"></i>
-                    <h5 class="card-title">Study Materials</h5>
-                    <p class="card-text">Past papers, notes, and resources available</p>
-                    <a href="{{ url_for('materials') }}" class="btn mt-2" style="background-color: #fa9566; color: white;">Browse Materials</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <h2 class="mb-4 text-center">Recent Announcements</h2>
-            {% if announcements %}
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Announcements Section -->
+        <section class="section">
+            <h2>📢 Latest Announcements</h2>
+            {% if announcements and announcements|length > 0 %}
                 {% for announcement in announcements %}
-                <div class="card mb-3 {% if announcement.priority == 'high' %}border-danger{% endif %}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="card-title">
-                                    {% if announcement.priority == 'high' %}
-                                    <i class="fas fa-exclamation-circle text-danger"></i>
-                                    {% endif %}
-                                    {{ announcement.title }}
-                                </h5>
-                                <p class="card-text">{{ announcement.content }}</p>
-                            </div>
-                            <small class="text-muted">
-                                {% if announcement.created_at %}
-                                    {{ announcement.created_at.strftime('%d %b %Y') }}
-                                {% endif %}
-                            </small>
-                        </div>
-                    </div>
+                <div class="announcement-item {% if announcement.priority == 'high' %}high-priority{% endif %}">
+                    <h3>
+                        {{ announcement.title }}
+                        {% if announcement.priority == 'high' %}
+                        <span class="priority-badge">URGENT</span>
+                        {% endif %}
+                    </h3>
+                    <span class="date">📅 {{ announcement.created_at }}</span>
+                    <p>{{ announcement.content }}</p>
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-muted">No announcements at this time.</p>
+                <div class="no-announcements">
+                    No announcements at the moment. Check back soon!
+                </div>
             {% endif %}
-        </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section">
+            <h2>Why Choose NIE?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Expert Teachers</h3>
+                    <p>Learn from experienced educators with over 11 years of teaching excellence</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Quality Materials</h3>
+                    <p>Access comprehensive study materials and resources</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Small Classes</h3>
+                    <p>Personalized attention in focused learning environments</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Proven Results</h3>
+                    <p>Thousands of successful students achieving their goals</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="section">
+            <h2>Quick Access</h2>
+            <div class="quick-links">
+                <a href="/calendar" class="quick-link">
+                    <h3>📅 Class Calendar</h3>
+                    <p>View upcoming classes and schedule</p>
+                </a>
+                <a href="/camps" class="quick-link">
+                    <h3>⛺ Holiday Camps</h3>
+                    <p>Join our intensive revision camps</p>
+                </a>
+                <a href="/materials" class="quick-link">
+                    <h3>📖 Study Materials</h3>
+                    <p>Download notes and resources</p>
+                </a>
+                <a href="/about" class="quick-link">
+                    <h3>👨‍🏫 Our Team</h3>
+                    <p>Meet our expert teachers</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Contact Info -->
+        <section class="section">
+            <h2>Get In Touch</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="icon">📱</div>
+                    <h3>WhatsApp</h3>
+                    <a href="https://wa.me/27726924060" target="_blank">
+                        {% if settings and settings.whatsapp_number %}
+                            {{ settings.whatsapp_number }}
+                        {% else %}
+                            +27 72 692 4060
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">📧</div>
+                    <h3>Email</h3>
+                    <a href="mailto:{% if settings and settings.email %}{{ settings.email }}{% else %}info@nie.co.za{% endif %}">
+                        {% if settings and settings.email %}
+                            {{ settings.email }}
+                        {% else %}
+                            info@nie.co.za
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">📍</div>
+                    <h3>Location</h3>
+                    <p>Durban, KwaZulu-Natal</p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    <div class="row mt-5">
-        <div class="col-lg-8 mx-auto text-center bg-light p-5 rounded">
-            <h3 class="mb-3">Ready to Get Started?</h3>
-            <p class="mb-4">Contact us today to enroll in our classes or get more information</p>
-            <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg me-2">Contact Us</a>
-            {% if settings.whatsapp_number %}
-            <a href="https://wa.me/{{ settings.whatsapp_number.replace('+', '').replace(' ', '') }}" class="btn btn-success btn-lg" target="_blank">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-            </a>
-            {% endif %}
-        </div>
-    </div>
-</div>
-{% endblock %}
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Ntshofo Institution of Excellence (NIE). All rights reserved.</p>
+        <p style="margin-top: 0.5rem;">
+            Empowering minds, building futures | 
+            <a href="/contact">Contact Us</a>
+        </p>
+    </footer>
+</body>
+</html>
