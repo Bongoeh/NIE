@@ -40,6 +40,10 @@ instance/
 *.swo
 *~
 
+# Node modules (optional but recommended to exclude)
+node_modules/
+package-lock.json
+
 # Firebase credentials (IMPORTANT: Never commit service account JSON)
 firebase_config.json
 *-firebase-adminsdk-*.json
