@@ -21,15 +21,10 @@ except ImportError as e:
 
 # Create Flask app with proper folder handling
 try:
-    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
-    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
-    
-    print(f"[INIT] Template dir: {template_dir}", file=sys.stderr, flush=True)
-    print(f"[INIT] Static dir: {static_dir}", file=sys.stderr, flush=True)
-    
+    # Use relative paths directly - templates and static are siblings to app.py
     app = Flask(__name__, 
-                template_folder=template_dir,
-                static_folder=static_dir)
+                template_folder='templates',
+                static_folder='static')
     print("[INIT] Flask app created successfully", file=sys.stderr, flush=True)
 except Exception as e:
     print(f"[ERROR] Failed to create Flask app: {e}", file=sys.stderr, flush=True)
@@ -65,6 +60,23 @@ def get_firebase():
     return _firebase_instance
 
 print("[INIT] App initialization complete", file=sys.stderr, flush=True)
+# Firebase lazy loader
+_firebase_instance = None
+
+def get_firebase():
+    """Lazy Firebase initialization"""
+    global _firebase_instance
+    if _firebase_instance is None:
+        try:
+            creds_b64 = os.environ.get('FIREBASE_CREDENTIALS_BASE64')
+            if creds_b64:
+                print("[INIT] Firebase env var found", file=sys.stderr, flush=True)
+                # Don't initialize yet - do it when actually needed
+        except Exception as e:
+            print(f"[WARN] Firebase setup error: {e}", file=sys.stderr, flush=True)
+    return _firebase_instance
+
+print("[INIT] App initialization complete", file=sys.stderr, flush=True)
 
 # ============ DIAGNOSTIC ROUTES ============
 
@@ -78,9 +90,7 @@ def api_health():
     """API health check with diagnostics"""
     return jsonify({
         "status": "ok",
-        "firebase_available": get_firebase() is not None,
-        "templates_dir_exists": os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))),
-        "static_dir_exists": os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static')))
+        "firebase_available": get_firebase() is not None
     }), 200
 
 # ============ PUBLIC ROUTES ============
@@ -90,11 +100,6 @@ def index():
     """Home page"""
     print("[ROUTE] index() called", file=sys.stderr, flush=True)
     try:
-        # Check if templates directory exists
-        template_path = os.path.join(os.path.dirname(__file__), '..', 'templates', 'index.html')
-        print(f"[ROUTE] Looking for template at: {template_path}", file=sys.stderr, flush=True)
-        print(f"[ROUTE] Template exists: {os.path.exists(template_path)}", file=sys.stderr, flush=True)
-        
         return render_template('index.html')
     except Exception as e:
         print(f"[ERROR] index() failed: {e}", file=sys.stderr, flush=True)
