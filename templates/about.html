@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Study With Us</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f4f4;
+        }
+
+        /* Navigation */
+        nav {
+            background: #fc721d;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: #f89d65;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #fa6509 0%, #f7d5c1 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #fc721d;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #fc721d;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Founder Section */
+        .founder {
+            display: flex;
+            gap: 3rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .founder-image {
+            flex: 0 0 300px;
+        }
+
+        .founder-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .founder-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .founder-content h3 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .founder-content .title {
+            color: #fc721d;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 4px solid #fc721d;
+        }
+
+        .team-member h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member .role {
+            color: #f57d33;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member .subject {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .founder {
+                flex-direction: column;
+            }
+
+            .founder-image {
+                flex: 0 0 auto;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .section {
+                padding: 2rem 1.5rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About Us</a></li>
+            <li><a href="{{ url_for('camps') }}">Camps</a></li>
+            <li><a href="{{ url_for('calendar') }}">Calendar</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            {% if session.get('user_id') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            {% else %}
+                <li><a href="{{ url_for('admin_login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>About NIE</h1>
+        <p>Empowering students to achieve academic excellence through dedicated teaching and personalized support</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Founder Section -->
+        <section class="section">
+            <h2>Meet Our Founder</h2>
+            <div class="founder">
+                <div class="founder-image">
+                    <img src="{{ url_for('static', filename='images/founder.jpeg') }}" alt="Founder Name">
+                </div>
+                <div class="founder-content">
+                    <h3>Mr. Shange</h3>
+                    <p class="title">Founder & Head Teacher</p>
+                    <p>
+                       With over 11 years of experience in education, Mr. Shange established Ntshofo Institution of Excellence (NIE) with a vision to provide quality and accessible education to students in the community.
+
+Passionate about Mathematics and dedicated to student success, he has helped thousands of learners achieve their academic goals. His commitment to excellence has even earned him international recognition, as he travelled overseas to receive an educational award for his outstanding contribution to student development.
+                    <p style="margin-top: 1rem;">
+                   Mr. Shange’s teaching philosophy focuses on understanding each student’s unique learning style and creating a supportive environment where every learner can thrive.
+                    </p>
+                    <p style="margin-top: 1rem;">
+                        "Education is not just about passing exams; it's about building confidence, critical thinking, and a lifelong love for learning." -Mr Shange
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="section">
+            <h2>Our Teaching Team</h2>
+            <p>Meet the dedicated educators who make learning engaging and effective</p>
+            
+            <div class="team-grid">
+                <!-- Teacher 1 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher1.jpeg') }}" alt="Teacher Name">
+                    <h3>Mr. Isilo Mpanza</h3>
+                    <p class="role">Life Sciences Teacher</p>
+                  
+                </div>
+
+                <!-- Teacher 2 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher2.jpeg') }}" alt="Teacher Name">
+                    <h3>Mr. Hadebe</h3>
+                    <p class="role">Mathematics Teacher</p>
+                    
+                </div>
+
+                <!-- Teacher 3 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher3.jpeg') }}" alt="Teacher Name">
+                    <h3>Ms. Dlamin</h3>
+                    <p class="role">Mathematics Teacher</p>
+                    
+                </div>
+
+                <!-- Teacher 4 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher4.jpeg') }}" alt="Teacher Name">
+                    <h3>Mr. Ntencane</h3>
+                    <p class="role">Mathematics Teacher</p>
+                 
+                </div>
+
+                 <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher5.jpeg') }}" alt="Teacher Name">
+                    <h3>Mr. Dlamini</h3>
+                    <p class="role">Mathematical Literacy Teacher</p>
+                    
+                </div>
+
+                 <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/teacher6.jpeg') }}" alt="Teacher Name">
+                    <h3>Mr. Zangwa </h3>
+                    <p class="role">Physical Science Teacher</p>
+                    
+                </div>
+
+
+
+                <!-- Add more teachers as needed -->
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="section">
+            <h2>Our Camps & Classes</h2>
+            <p>Take a look at our vibrant learning environment and student activities</p>
+            
+            <div class="gallery-grid">
+                <!-- Gallery Item 1 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/camp1.jpeg') }}" alt="Summer Camp 2024">
+                    <div class="gallery-caption">
+                        <h4>LAST DANCE CAMP 2025</h4>
+                        <p>Inspiring future leaders through learning and fun.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/class1.jpeg') }}" alt="Mathematics Class">
+                    <div class="gallery-caption">
+                        <h4>X-Night Classes</h4>
+                        <p>Crossing into new beginnings with courage and unity.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 3 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/camp2.jpeg') }}" alt="Winter Camp 2024">
+                    <div class="gallery-caption">
+                        <h4>LAST DANCE CAMP 2025</h4>
+                        <p>Where learning meets inspiration for tomorrow’s success.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 4 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/class2.jpeg') }}" alt="Science Lab">
+                    <div class="gallery-caption">
+                        <h4>Cross-night Class</h4>
+                        <p>Crossing into new beginnings with courage and unity</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 5 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/camp3.jpeg') }}" alt="Easter Camp">
+                    <div class="gallery-caption">
+                        <h4>Summer Camp 2024</h4>
+                        <p>Celebrating growth, goals, and the power of dreams.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 6 -->
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='images/class3.jpeg') }}" alt="Group Study">
+                    <div class="gallery-caption">
+                        <h4>Group Study Sessions</h4>
+                        <p>The night we cross into greatness.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission/Values Section -->
+        <section class="section">
+            <h2>Our Mission & Values</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #f89d65;">
+                    <h3 style="color: #f89d65; margin-bottom: 0.5rem;">Excellence</h3>
+                    <p>We strive for academic excellence in everything we do, ensuring every student reaches their full potential.</p>
+                </div>
+                <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #fd6a0e;">
+                    <h3 style="color: #fd6a0e; margin-bottom: 0.5rem;">Support</h3>
+                    <p>We provide personalized support and guidance to help students overcome challenges and build confidence.</p>
+                </div>
+                <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #f89d65;">
+                    <h3 style="color: #f89d65; margin-bottom: 0.5rem;">Community</h3>
+                    <p>We foster a welcoming community where students feel valued, motivated, and inspired to learn.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #2c3e50; color: white; text-align: center; padding: 2rem; margin-top: 3rem;">
+        <p>&copy; 2025 NIE. All rights reserved.</p>
+        <p style="margin-top: 0.5rem;">Contact us: +27 72 692 4060</p>
+    </footer>
+</body>
+</html>

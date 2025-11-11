@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}Classes Calendar{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, white 0%, white 100%);
+        min-height: 100vh;
+        
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: #fa6509;
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        font-weight: bold;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #fa6509;
+        margin-bottom: 3rem;
+        font-size: 1.2rem;
+        opacity: 0.95;
+    }
+
+    /* Countdown Timer */
+    .countdown-section {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .countdown-title {
+        color: #f8721f;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .countdown-timer {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .time-unit {
+        background: linear-gradient(135deg, #fa6509, #fab991);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        min-width: 100px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .time-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        display: block;
+    }
+
+    .time-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Classes Grid */
+    .classes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .class-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .class-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #fa6509, #fab991);
+    }
+
+    .class-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .class-type {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .type-crossnight {
+        background: linear-gradient(135deg, #fab991, #fa6509);
+        color: white;
+    }
+
+    .type-regular {
+        background: linear-gradient(135deg, #fa6509, #fa4d09);
+        color: white;
+    }
+
+    .class-title {
+        color: #2d3748;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+
+    .class-description {
+        color: #4a5568;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .class-details {
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        color: #4a5568;
+        font-size: 0.95rem;
+    }
+
+    .detail-icon {
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: #fa6509;
+    }
+
+    .no-classes {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .no-classes-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .no-classes p {
+        color: #4a5568;
+        font-size: 1.2rem;
+    }
+
+    footer {
+        text-align: center;
+        color: #fa6509;
+        padding: 2rem;
+        margin-top: 3rem;
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        .classes-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .countdown-timer {
+            gap: 1rem;
+        }
+
+        .time-unit {
+            min-width: 80px;
+            padding: 1rem;
+        }
+
+        .time-value {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>
+        <span style="margin-right: 0.5rem; display: inline-flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-calendar-week" viewBox="0 0 16 16">
+                <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+            </svg>
+        </span>
+        Our Classes
+    </h1>
+    <p class="subtitle">Join us for amazing learning experiences</p>
+
+    <!-- Countdown Timer (only shows if there's a crossnight) -->
+    <div id="countdownSection" class="countdown-section" style="display: none;">
+       <h2 class="countdown-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16" style="vertical-align: middle; margin-right: 0.5rem;">
+        <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9z"/>
+        <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1zm1.038 3.018a6 6 0 0 1 .924 0 6 6 0 1 1-.924 0M0 3.5c0 .753.333 1.429.86 1.887A8.04 8.04 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5M13.5 1c-.753 0-1.429.333-1.887.86a8.04 8.04 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1"/>
+    </svg>
+    Next Crossnight Starts In:
+</h2>
+        <div class="countdown-timer">
+            <div class="time-unit">
+                <span class="time-value" id="days">00</span>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-unit">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-unit">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-unit">
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">Seconds</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classes Grid -->
+    <div class="classes-grid">
+        <!-- Sample class cards - replace with your Jinja2 loop -->
+        {% if classes %}
+            {% for class in classes %}
+            <div class="class-card" data-date="{{ class.date }}" data-time="{{ class.time }}" data-type="{{ class.type }}">
+                <span class="class-type {% if class.type == 'crossnight' %}type-crossnight{% else %}type-regular{% endif %}">
+                    {% if class.type == 'crossnight' %}🌙 Crossnight{% else %} 📚 Weekend Class{% endif %}
+                </span>
+                <h3 class="class-title">{{ class.title }}</h3>
+                <p class="class-description">{{ class.description }}</p>
+                <div class="class-details">
+                    <div class="detail-item">
+    <span class="detail-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-calendar-week" viewBox="0 0 16 16" style="vertical-align: middle;">
+            <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+        </svg>
+    </span>
+    <span class="detail-label">Date:</span>
+    <span>{{ class.date }}</span>
+</div>
+                    <div class="detail-item">
+                        <span class="detail-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
+  <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9z"/>
+  <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1zm1.038 3.018a6 6 0 0 1 .924 0 6 6 0 1 1-.924 0M0 3.5c0 .753.333 1.429.86 1.887A8.04 8.04 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5M13.5 1c-.753 0-1.429.333-1.887.86a8.04 8.04 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1"/>
+</svg></span>
+                        <span class="detail-label">Time:</span>
+                        <span>{{ class.time }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-alarm-fill" viewBox="0 0 16 16">
+  <path d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5m2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.04 8.04 0 0 0 .86 5.387M11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.04 8.04 0 0 0-3.527-3.527"/>
+</svg></span>
+                        <span class="detail-label">Duration:</span>
+                        <span>{{ class.duration }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-classes">
+                <div class="no-classes-icon">📭</div>
+                <p>No classes available at the moment.</p>
+                <p style="margin-top: 0.5rem; font-size: 1rem; opacity: 0.8;">Check back soon for updates!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 {{ settings.teacher_name }} | {{ settings.email }}</p>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Find the next crossnight class
+    function findNextCrossnight() {
+        const cards = document.querySelectorAll('.class-card');
+        let nextCrossnight = null;
+        let closestTime = Infinity;
+
+        cards.forEach(card => {
+            const type = card.getAttribute('data-type');
+            if (type === 'crossnight') {
+                const dateStr = card.getAttribute('data-date');
+                const timeStr = card.getAttribute('data-time');
+                
+                // Parse the date and time
+                const classDateTime = new Date(dateStr + ' ' + timeStr);
+                const now = new Date();
+                const timeDiff = classDateTime - now;
+
+                // Only consider future crossnights
+                if (timeDiff > 0 && timeDiff < closestTime) {
+                    closestTime = timeDiff;
+                    nextCrossnight = classDateTime;
+                }
+            }
+        });
+
+        return nextCrossnight;
+    }
+
+    // Update countdown timer
+    function updateCountdown(targetDate) {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+            document.getElementById('countdownSection').style.display = 'none';
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('days').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    // Initialize countdown
+    const nextCrossnight = findNextCrossnight();
+    if (nextCrossnight) {
+        document.getElementById('countdownSection').style.display = 'block';
+        updateCountdown(nextCrossnight);
+        setInterval(() => updateCountdown(nextCrossnight), 1000);
+    }
+</script>
+{% endblock %}

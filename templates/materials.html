@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Study Materials - Study Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #fa6509 0%, #fab991 100%);
+        min-height: 100vh;
+        padding: 0;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #fa6509 0%, #f7d5c1 100%);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        font-weight: bold;
+    }
+
+    .hero-section .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    /* Main Content */
+    .main-content {
+        background: white;
+        min-height: 70vh;
+        padding: 3rem 2rem;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        margin-bottom: 3rem;
+    }
+
+    .filter-label {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .tab-button {
+        padding: 0.8rem 2rem;
+        background: white;
+        border: 2px solid #fa6509;
+        color: #fa6509;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .tab-button:hover {
+        background: #fa6509;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(250, 101, 9, 0.3);
+    }
+
+    .tab-button.active {
+        background: linear-gradient(135deg, #fa6509, #f7d5c1);
+        color: white;
+        border-color: #cc5611;
+    }
+
+    /* Grade Filter Buttons */
+    .grade-button {
+        padding: 0.8rem 1.5rem;
+        background: white;
+        border: 2px solid #fa6509;
+        color: #fa6509;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .grade-button:hover {
+        background: #fa6509;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+    }
+
+    .grade-button.active {
+        background: linear-gradient(135deg, #fa6509, #fc9454);
+        color: white;
+        border-color: #fa6509;
+    }
+
+    /* Materials Grid */
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .material-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .material-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #fa6509, #f7d5c1);
+    }
+
+    .material-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .material-card.hidden {
+        display: none;
+    }
+
+    .material-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .material-title {
+        color: #2d3748;
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin: 0;
+        flex: 1;
+    }
+
+    .material-badges {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-left: 1rem;
+    }
+
+    .material-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .badge-notes {
+        background: linear-gradient(135deg, #f36506, #f8f418);
+        color: white;
+    }
+
+    .badge-pastpapers {
+        background: linear-gradient(135deg, #f54c40, #fd6b0a);
+        color: white;
+    }
+
+    .badge-assignments {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        color: white;
+    }
+
+    .badge-grade {
+        background: linear-gradient(135deg, #f88d45, rgb(245, 221, 177));
+        color: white;
+    }
+
+    .material-description {
+        color: #4a5568;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .material-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f7fafc;
+        border-radius: 12px;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .meta-icon {
+        margin-right: 0.5rem;
+        color: #fa6509;
+    }
+
+    .download-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #fa6509, #f7d5c1);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .download-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 20px rgba(250, 101, 9, 0.4);
+        color: white;
+    }
+
+    /* No Materials Message */
+    .no-materials {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .no-materials-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .no-materials h3 {
+        color: #2d3748;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .no-materials p {
+        color: #4a5568;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .materials-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-tabs {
+            gap: 0.5rem;
+        }
+
+        .tab-button, .grade-button {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .material-header {
+            flex-direction: column;
+        }
+
+        .material-badges {
+            margin-left: 0;
+            margin-top: 0.5rem;
+            flex-direction: row;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <h1>📚 Study Materials</h1>
+    <p class="subtitle">Download comprehensive resources for your studies</p>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        {% if materials %}
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <!-- Grade Filter -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span class="filter-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mortarboard-fill" viewBox="0 0 16 16">
+  <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/>
+  <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/>
+</svg> Filter by Grade</span>
+                <div class="filter-tabs">
+                    <button class="grade-button active" onclick="filterByGrade('all')">All Grades</button>
+                    <button class="grade-button" onclick="filterByGrade('12')">Grade 12</button>
+                    <button class="grade-button" onclick="filterByGrade('11')">Grade 11</button>
+                    <button class="grade-button" onclick="filterByGrade('10')">Grade 10</button>
+                    <button class="grade-button" onclick="filterByGrade('9')">Grade 9</button>
+                    <button class="grade-button" onclick="filterByGrade('8')">Grade 8</button>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div style="text-align: center;">
+                <span class="filter-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16">
+  <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7z"/>
+</svg> Filter by Type</span>
+                <div class="filter-tabs">
+                    <button class="tab-button active" onclick="filterByCategory('all')">All Materials</button>
+                    <button class="tab-button" onclick="filterByCategory('notes')">📝 Notes</button>
+                    <button class="tab-button" onclick="filterByCategory('pastpapers')">📄 Past Papers</button>
+              
+                </div>
+            </div>
+        </div>
+
+        <!-- Materials Grid -->
+        <div class="materials-grid" id="materialsGrid">
+            {% for material in materials %}
+            <div class="material-card" 
+                 data-category="{{ material.category }}" 
+                 data-grade="{{ material.grade if material.grade else '' }}">
+                <div class="material-header">
+                    <h3 class="material-title">{{ material.title }}</h3>
+                    <div class="material-badges">
+                        <span class="material-badge badge-{{ material.category }}">
+                            {{ material.category.title() }}
+                        </span>
+                        {% if material.grade %}
+                        <span class="material-badge badge-grade">
+                            Grade {{ material.grade }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if material.description %}
+                <p class="material-description">{{ material.description }}</p>
+                {% endif %}
+                
+                <div class="material-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16">
+  <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7z"/>
+</svg></span>
+                        <span>{{ material.file_name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event-fill" viewBox="0 0 16 16">
+  <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2m-3.5-7h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5"/>
+</svg></span>
+                        <span>{{ material.uploaded_at.strftime('%d %B %Y') if material.uploaded_at else 'N/A' }}</span>
+                    </div>
+                </div>
+                
+                <a href="{{ material.file_url }}" class="download-btn" target="_blank" download>
+                    <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+</svg></span>
+                    <span>Download</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- No Results Message (hidden by default) -->
+        <div class="no-materials" id="noResultsMessage" style="display: none;">
+            <div class="no-materials-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+</svg></div>
+            <h3>No Materials Found</h3>
+            <p>Try selecting different filters to see more materials.</p>
+        </div>
+
+        {% else %}
+        <div class="no-materials">
+            <div class="no-materials-icon">📚</div>
+            <h3>No Study Materials Available</h3>
+            <p>Check back soon for comprehensive study resources!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentGrade = 'all';
+    let currentCategory = 'all';
+
+    function filterByGrade(grade) {
+        currentGrade = grade;
+        
+        // Update active grade button
+        const gradeButtons = document.querySelectorAll('.grade-button');
+        gradeButtons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        applyFilters();
+    }
+
+    function filterByCategory(category) {
+        currentCategory = category;
+        
+        // Update active category button
+        const categoryButtons = document.querySelectorAll('.tab-button');
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const cards = document.querySelectorAll('.material-card');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardCategory = card.getAttribute('data-category');
+            const cardGrade = card.getAttribute('data-grade');
+            
+            let showCard = true;
+
+            // Check category filter
+            if (currentCategory !== 'all' && cardCategory !== currentCategory) {
+                showCard = false;
+            }
+
+            // Check grade filter
+            if (currentGrade !== 'all' && cardGrade !== currentGrade) {
+                showCard = false;
+            }
+
+            // Show or hide card
+            if (showCard) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // Show/hide no results message
+        if (visibleCount === 0) {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

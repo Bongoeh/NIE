@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Study Hub{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3">Welcome to  Ntshofo Institution of Excellence</h1>
+        <p class="lead">Quality education for weekend classes, camps, and study materials</p>
+        <a href="{{ url_for('calendar') }}" class="btn btn-light btn-lg me-2">View Classes</a>
+        <a href="{{ url_for('materials') }}" class="btn btn-outline-light btn-lg">Study Materials</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="mb-4">About Our Classes</h2>
+            <p class="lead">{{ settings.about or "We provide quality tutoring for students looking to excel in their studies. Join our weekend classes and holiday camps for intensive learning experiences." }}</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x mb-3" style="color: #fd5203;"></i>
+                    <h5 class="card-title">Weekend Classes</h5>
+                    <p class="card-text">Regular weekend sessions to help you stay on track</p>
+                    <p class="fw-bold" style="color: #fd5203;">R{{ settings.class_price or "TBA" }} per class</p>
+                    <a href="{{ url_for('calendar') }}" class="btn mt-2" style="background-color: #fd5203; color: white;">View Schedule</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-campground fa-3x text-orange mb-3" style="color: #f57133;"></i>
+                    <h5 class="card-title">Holiday Camps</h5>
+                    <p class="card-text">Intensive learning during school holidays</p>
+                    <p class="fw-bold" style="color: #f57133;">R{{ settings.camp_price or "TBA" }} per camp</p>
+                    <a href="{{ url_for('camps') }}" class="btn mt-2" style="background-color: #f57133; color: white;">View Camps</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-book-open fa-3x text-orange mb-3" style="color: #fa9566;"></i>
+                    <h5 class="card-title">Study Materials</h5>
+                    <p class="card-text">Past papers, notes, and resources available</p>
+                    <a href="{{ url_for('materials') }}" class="btn mt-2" style="background-color: #fa9566; color: white;">Browse Materials</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <h2 class="mb-4 text-center">Recent Announcements</h2>
+            {% if announcements %}
+                {% for announcement in announcements %}
+                <div class="card mb-3 {% if announcement.priority == 'high' %}border-danger{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">
+                                    {% if announcement.priority == 'high' %}
+                                    <i class="fas fa-exclamation-circle text-danger"></i>
+                                    {% endif %}
+                                    {{ announcement.title }}
+                                </h5>
+                                <p class="card-text">{{ announcement.content }}</p>
+                            </div>
+                            <small class="text-muted">
+                                {% if announcement.created_at %}
+                                    {{ announcement.created_at.strftime('%d %b %Y') }}
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted">No announcements at this time.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto text-center bg-light p-5 rounded">
+            <h3 class="mb-3">Ready to Get Started?</h3>
+            <p class="mb-4">Contact us today to enroll in our classes or get more information</p>
+            <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg me-2">Contact Us</a>
+            {% if settings.whatsapp_number %}
+            <a href="https://wa.me/{{ settings.whatsapp_number.replace('+', '').replace(' ', '') }}" class="btn btn-success btn-lg" target="_blank">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
