@@ -87,7 +87,7 @@ def health():
         "templates_exist": os.path.exists(app.template_folder)
     }), 200
 
-# ============ PUBLIC ROUTES ============
+
 
 @app.route('/')
 def index():
