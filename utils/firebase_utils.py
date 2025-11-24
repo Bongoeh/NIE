@@ -20,26 +20,46 @@ class FirebaseManager:
         """Fetch recent announcements from Firestore."""
         db = firestore.client()
         try:
-            # Try to order by timestamp
-            announcements_ref = db.collection('announcements').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(limit)
+            # Order by timestamp in descending order (newest first)
+            announcements_ref = db.collection('announcements').order_by(
+                'timestamp', 
+                direction=firestore.Query.DESCENDING
+            ).limit(limit)
+            
             announcements = []
             for doc in announcements_ref.stream():
                 announcement_data = doc.to_dict()
                 announcement_data['id'] = doc.id
-                # Only include if timestamp exists and is not None
-                if announcement_data.get('timestamp') is not None:
-                    announcements.append(announcement_data)
-            return announcements
-        except Exception as e:
-            print(f"[ERROR] Failed to fetch announcements with ordering: {e}")
-            # Fallback: get all announcements without ordering
-            announcements_ref = db.collection('announcements').limit(limit)
-            announcements = []
-            for doc in announcements_ref.stream():
-                announcement_data = doc.to_dict()
-                announcement_data['id'] = doc.id
+                
+                # Convert timestamp to readable format if it exists
+                if 'timestamp' in announcement_data and announcement_data['timestamp']:
+                    timestamp = announcement_data['timestamp']
+                    # Handle both datetime objects and Firestore timestamps
+                    if hasattr(timestamp, 'timestamp'):
+                        announcement_data['created_at'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                    
                 announcements.append(announcement_data)
+            
+            print(f"[DEBUG] Successfully fetched {len(announcements)} announcements")
             return announcements
+            
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch announcements: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            # Fallback: get without ordering
+            try:
+                announcements_ref = db.collection('announcements').limit(limit)
+                announcements = []
+                for doc in announcements_ref.stream():
+                    announcement_data = doc.to_dict()
+                    announcement_data['id'] = doc.id
+                    announcements.append(announcement_data)
+                return announcements
+            except Exception as fallback_error:
+                print(f"[ERROR] Fallback also failed: {fallback_error}")
+                return []
 
     def get_settings(self):
         """Fetch website settings from Firestore."""
@@ -121,9 +141,11 @@ class FirebaseManager:
     def add_announcement(self, announcement_data):
         """Add a new announcement to Firestore."""
         db = firestore.client()
-        # Use Python datetime for immediate availability
-        announcement_data['timestamp'] = datetime.now()
-        announcement_data['created_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # CRITICAL FIX: Use Firestore SERVER_TIMESTAMP instead of Python datetime
+        # This ensures proper ordering and prevents timestamp mismatches
+        announcement_data['timestamp'] = firestore.SERVER_TIMESTAMP
+        
         announcements_ref = db.collection('announcements')
         doc_ref = announcements_ref.add(announcement_data)
         print(f"[DEBUG] Announcement added with ID: {doc_ref[1].id}")

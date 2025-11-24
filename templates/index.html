@@ -125,7 +125,7 @@
     /* Announcements Section */
     .announcements-section {
         padding: 60px 0;
-        background-color: white;
+        background-color: rgb(255, 255, 255);
     }
     
     .announcements-section h2 {
@@ -200,6 +200,24 @@
     .contact-section .btn-orange:hover {
         background-color: #e66419;
     }
+    .contact-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff6b35 0%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
 </style>
 {% endblock %}
 
@@ -207,7 +225,7 @@
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container text-center">
-        <h1>Welcome to Mr Shange Study Hub</h1>
+        <h1>Welcome to Ntshofo Institution of Excellence</h1>
         <p>{{ settings.about or 'Quality education for weekend classes, camps, and study materials' }}</p>
         <div>
             <a href="{{ url_for('calendar') }}" class="btn btn-light btn-lg">
@@ -233,7 +251,7 @@
 <div class="col-md-4">
     <div class="card service-card" style="background: linear-gradient(135deg, white, white 100%); color: white; border: none;">
         <div class="card-body">
-            <div class="icon" style="color: #ff6b35 0%;">
+            <div class="icon" style="color: #fa6604 0%;">
                 <i class="fas fa-calendar-alt"></i>
             </div>
             <h5 class="card-title">Weekend Classes</h5>
@@ -247,7 +265,7 @@
 <div class="col-md-4">
     <div class="card service-card" style="background: linear-gradient(135deg, white, white 100%); color: white; border: none;">
         <div class="card-body">
-            <div class="icon" style="color: #ff9966;">
+            <div class="icon" style="color: #fa874d;">
                 <i class="fas fa-book"></i>
             </div>
             <h5 class="card-title">Study Materials</h5>
@@ -261,7 +279,7 @@
 <div class="col-md-4">
     <div class="card service-card" style="background: linear-gradient(135deg, white 0%, white 100%); color: #333; border: none;">
         <div class="card-body">
-            <div class="icon" style="color: #ffc2995;">
+            <div class="icon" style="color: #ff9966;">
                 <i class="fas fa-campground"></i>
             </div>
             <h5 class="card-title">Holiday Camps</h5>
@@ -294,45 +312,54 @@
 {% endif %}
 
 <!-- Contact Section -->
-<section class="contact-section">
+<section class="py-5 bg-light">
     <div class="container">
-        <h2>Get in Touch</h2>
+        <h2 class="text-center mb-5">Get in Touch</h2>
+        
         <div class="row justify-content-center">
-            <div class="col-md-10">
-                {% if settings.teacher_name or settings.email or settings.whatsapp_number %}
-                <div class="row text-center mb-4">
-                    {% if settings.teacher_name %}
-                    <div class="col-md-4 mb-3">
-                        <i class="fas fa-user contact-icon"></i>
-                        <h6>Instructor</h6>
-                        <p class="text-muted">{{ settings.teacher_name }}</p>
+            {% if settings.teacher_name or settings.whatsapp_number %}
+            
+            <!-- Instructor Card -->
+            {% if settings.teacher_name %}
+            <div class="col-md-5 col-lg-4 mb-4">
+                <div class="card h-100 text-center border-0 shadow-sm hover-card">
+                    <div class="card-body p-4">
+                        <div class="contact-icon mx-auto mb-3">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                        <h5 class="card-title">Instructor</h5>
+                        <p class="card-text text-muted">{{ settings.teacher_name }}</p>
                     </div>
-                    {% endif %}
-                    {% if settings.email %}
-                    <div class="col-md-4 mb-3">
-                        <i class="fas fa-envelope contact-icon"></i>
-                        <h6>Email</h6>
-                        <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>
-                    </div>
-                    {% endif %}
-                    {% if settings.whatsapp_number %}
-                    <div class="col-md-4 mb-3">
-                        <i class="fas fa-phone contact-icon"></i>
-                        <h6>WhatsApp</h6>
-                        <a href="https://wa.me/{{ settings.whatsapp_number.replace('+', '').replace(' ', '') }}" target="_blank">{{ settings.whatsapp_number }}</a>
-                    </div>
-                    {% endif %}
                 </div>
-                <div class="text-center">
-                    <a href="{{ url_for('contact') }}" class="btn btn-orange btn-lg">Send Message</a>
-                </div>
-                {% else %}
-                <div class="text-center">
-                    <p class="text-muted mb-4">Contact information coming soon!</p>
-                    <a href="{{ url_for('contact') }}" class="btn btn-orange btn-lg">Contact Us</a>
-                </div>
-                {% endif %}
             </div>
+            {% endif %}
+            
+            <!-- WhatsApp Card -->
+            {% if settings.whatsapp_number %}
+            <div class="col-md-5 col-lg-4 mb-4">
+                <div class="card h-100 text-center border-0 shadow-sm hover-card">
+                    <div class="card-body p-4">
+                        <div class="contact-icon mx-auto mb-3">
+                            <i class="fab fa-whatsapp fa-2x text-white"></i>
+                        </div>
+                        <h5 class="card-title">WhatsApp</h5>
+                        <p class="card-text text-muted">{{ settings.whatsapp_number }}</p>
+                        <a href="https://wa.me/{{ settings.whatsapp_number.replace(' ', '').replace('+', '') }}" 
+                           class="btn btn-primary btn-sm mt-2" 
+                           target="_blank">
+                            Send Message
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Contact information coming soon!</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">Contact Us</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
